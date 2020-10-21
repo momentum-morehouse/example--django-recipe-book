@@ -47,10 +47,18 @@ class RecipeQuerySet(models.QuerySet):
 
 
 class Recipe(models.Model):
+    class RecipeDifficulty(models.IntegerChoices):
+        EASY = 1, 'Easy'
+        MEDIUM = 2, 'Medium'
+        HARD = 3, 'Hard'
+        EXPERT = 4, 'Expert'
+
+
     objects = RecipeQuerySet.as_manager()
 
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="recipes")
     title = models.CharField(max_length=255)
+    difficulty = models.PositiveIntegerField(null=True, choices=RecipeDifficulty.choices)
     prep_time_in_minutes = models.PositiveIntegerField(null=True, blank=True)
     cook_time_in_minutes = models.PositiveIntegerField(null=True, blank=True)
     tags = models.ManyToManyField(to=Tag, related_name="recipes", blank=True)

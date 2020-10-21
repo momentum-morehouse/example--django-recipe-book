@@ -1,20 +1,15 @@
 import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Min, F, Q
-from django.http import JsonResponse, HttpResponse
+from django.contrib.postgres.search import SearchVector
+from django.db.models import Count, F, Min
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.contrib.postgres.search import SearchVector
 from django.views.generic import DetailView
 
-from .forms import (
-    IngredientForm,
-    RecipeForm,
-    RecipeStepForm,
-    IngredientFormset,
-)
+from .forms import IngredientForm, RecipeForm, RecipeStepForm
 from .models import Recipe, Tag
 
 
@@ -44,6 +39,7 @@ def recipe_list(request):
 
     return render(request, template_name, {"recipes": recipes})
 
+
 class RecipeDetail(DetailView):
     def get_queryset(self):
         return Recipe.objects.for_user(self.request.user).annotate(
@@ -55,8 +51,10 @@ class RecipeDetail(DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
-        context['ingredient_form'] = IngredientForm()
-        context['is_user_recipe'] = self.request.user.is_favorite_recipe(self.get_object())
+        context["ingredient_form"] = IngredientForm()
+        context["is_user_recipe"] = self.request.user.is_favorite_recipe(
+            self.get_object()
+        )
         return context
 
 
@@ -113,26 +111,19 @@ def recipe_search_json(request):
 def add_recipe(request):
     if request.method == "POST":
         form = RecipeForm(data=request.POST)
-        ingredient_formset = IngredientFormset(data=request.POST)
 
-        if form.is_valid() and ingredient_formset.is_valid():
+        if form.is_valid():
             recipe = form.save(commit=False)
             recipe.user = request.user
             recipe.save()
-            recipe.set_tag_names(form.cleaned_data["tag_names"])
-            ingredients = ingredient_formset.save(commit=False)
-            for ingredient in ingredients:
-                ingredient.recipe = recipe
-                ingredient.save()
             return redirect(to="recipe_detail", pk=recipe.pk)
     else:
         form = RecipeForm()
-        ingredient_formset = IngredientFormset()
 
     return render(
         request,
         "recipes/add_recipe.html",
-        {"form": form, "ingredient_formset": ingredient_formset},
+        {"form": form},
     )
 
 
@@ -142,17 +133,11 @@ def edit_recipe(request, recipe_pk):
 
     if request.method == "POST":
         form = RecipeForm(instance=recipe, data=request.POST, files=request.FILES)
-        ingredient_formset = IngredientFormset(instance=recipe, data=request.POST)
-        if form.is_valid() and ingredient_formset.is_valid():
+        if form.is_valid():
             recipe = form.save()
-            recipe.set_tag_names(form.cleaned_data["tag_names"])
-            ingredient_formset.save()
             return redirect(to="recipe_detail", pk=recipe.pk)
     else:
-        form = RecipeForm(
-            instance=recipe, initial={"tag_names": recipe.get_tag_names()}
-        )
-        ingredient_formset = IngredientFormset(instance=recipe)
+        form = RecipeForm(instance=recipe)
 
     return render(
         request,
@@ -160,7 +145,6 @@ def edit_recipe(request, recipe_pk):
         {
             "form": form,
             "recipe": recipe,
-            "ingredient_formset": ingredient_formset,
         },
     )
 
