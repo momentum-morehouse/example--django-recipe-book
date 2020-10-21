@@ -21,16 +21,16 @@ Recipe Book - {{ recipe.title }}
   </a>
 </h2>
 {% if recipe.original_recipe %}
-<p>Copied from <a href="{% url 'recipe_detail' recipe_pk=recipe.original_recipe.pk %}">{{ recipe.original_recipe.title }}</a></p>
+<p>Copied from <a href="{% url 'recipe_detail' pk=recipe.original_recipe.pk %}">{{ recipe.original_recipe.title }}</a></p>
 {% endif %}
 
 <p class="f6">
   {% if user == recipe.user %}
-    <a href="{% url 'edit_recipe' recipe_pk=recipe.pk %}">Edit this recipe</a>
-    <a class="red" href="{% url 'delete_recipe' recipe_pk=recipe.pk %}">Delete this recipe</a>
+    <a href="{% url 'edit_recipe' pk=recipe.pk %}">Edit this recipe</a>
+    <a class="red" href="{% url 'delete_recipe' pk=recipe.pk %}">Delete this recipe</a>
   {% endif %}
   {% if user.is_authenticated %}
-    <a href="{% url 'copy_recipe' recipe_pk=recipe.pk %}">Copy this recipe</a>
+    <a href="{% url 'copy_recipe' pk=recipe.pk %}">Copy this recipe</a>
   {% endif %}
 </p>
 
@@ -66,10 +66,10 @@ Recipe Book - {{ recipe.title }}
 
 {% if user == recipe.user %}
   {% if recipe.ingredients.count > 0 %}
-  <p><a id="show-ingredient-form" href="{% url 'add_ingredient' recipe_pk=recipe.pk %}">Add another ingredient</a></p>
+  <p><a id="show-ingredient-form" href="{% url 'add_ingredient' pk=recipe.pk %}">Add another ingredient</a></p>
   {% endif %}
 
-  <form class="{% if recipe.ingredients.count > 0 %}dn{% endif %}" id="ingredient-form" action="{% url 'add_ingredient' recipe_pk=recipe.pk %}" method="POST">
+  <form class="{% if recipe.ingredients.count > 0 %}dn{% endif %}" id="ingredient-form" action="{% url 'add_ingredient' pk=recipe.pk %}" method="POST">
     {% csrf_token %}
     {{ ingredient_form.as_p }}
     <div><button type="submit">Add ingredient</button></div>
@@ -85,7 +85,7 @@ Recipe Book - {{ recipe.title }}
 </ol>
 
 {% if user == recipe.user %}
-  <p><a href="{% url 'add_recipe_step' recipe_pk=recipe.pk %}">Add another step</a></p>
+  <p><a href="{% url 'add_recipe_step' pk=recipe.pk %}">Add another step</a></p>
 {% endif %}
 
 <script>

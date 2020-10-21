@@ -8,28 +8,10 @@
   {% csrf_token %}
 
   {% for field in form %}
-  <div class="form-field mb3">
-    <label class="db f5 mb2" for="{{ field.id_for_label }}">{{ field.label }}</label>
-    {{ field }}
-  </div>
-  {% endfor %}
-
-  <h3>Ingredients</h3>
-
-  {{ ingredient_formset.management_form }}
-  {% for form in ingredient_formset %}
-    <div class="flex justify-between">
-    {% for field in form %}
-      {% if field.is_hidden %}
-        <div>{{ field }}</div>
-      {% else %}
-      <div class="mb2 flex-auto mr2">
-        <div class="mb1">{{ field.label_tag }}</div>
-        <div>{{ field }}</div>
-      </div>
-      {% endif %}
-    {% endfor %}
-    </div>
+    <p>
+      <label class="db mv1" for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+    </p>
   {% endfor %}
 
   <div>

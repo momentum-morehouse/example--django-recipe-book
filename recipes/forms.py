@@ -1,7 +1,10 @@
 from django import forms
-from django.forms import inlineformset_factory
+from django.forms.widgets import Input
 from .models import Recipe, Ingredient, RecipeStep
 
+class RangeInput(Input):
+    input_type = 'range'
+    template_name = 'django/forms/widgets/input.html'
 
 class RecipeForm(forms.ModelForm):
     class Meta:
@@ -13,6 +16,15 @@ class RecipeForm(forms.ModelForm):
             "cook_time_in_minutes",
             "public",
         ]
+        widgets = {
+            "title": forms.TextInput(attrs={
+                'class': 'w-100 pa1',
+                'placeholder': "Grandma's Snoopy Salad",
+            }),
+            "difficulty": forms.Select(attrs={'class': 'w-100 pa1'}),
+            "prep_time_in_minutes": RangeInput(attrs={'min': 5, 'max': 120, 'step': 5}),
+            "cook_time_in_minutes": forms.NumberInput(attrs={'class': 'w-100 pa1'}),
+        }
 
 class IngredientForm(forms.ModelForm):
     class Meta:

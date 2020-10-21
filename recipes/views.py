@@ -128,8 +128,8 @@ def add_recipe(request):
 
 
 @login_required
-def edit_recipe(request, recipe_pk):
-    recipe = get_object_or_404(request.user.recipes, pk=recipe_pk)
+def edit_recipe(request, pk):
+    recipe = get_object_or_404(request.user.recipes, pk=pk)
 
     if request.method == "POST":
         form = RecipeForm(instance=recipe, data=request.POST, files=request.FILES)
@@ -150,8 +150,8 @@ def edit_recipe(request, recipe_pk):
 
 
 @login_required
-def delete_recipe(request, recipe_pk):
-    recipe = get_object_or_404(request.user.recipes, pk=recipe_pk)
+def delete_recipe(request, pk):
+    recipe = get_object_or_404(request.user.recipes, pk=pk)
 
     if request.method == "POST":
         recipe.delete()
@@ -163,8 +163,8 @@ def delete_recipe(request, recipe_pk):
 @login_required
 @csrf_exempt
 @require_POST
-def toggle_favorite_recipe(request, recipe_pk):
-    recipe = get_object_or_404(Recipe.objects.for_user(request.user), pk=recipe_pk)
+def toggle_favorite_recipe(request, pk):
+    recipe = get_object_or_404(Recipe.objects.for_user(request.user), pk=pk)
 
     if recipe in request.user.favorite_recipes.all():
         request.user.favorite_recipes.remove(recipe)
@@ -175,8 +175,8 @@ def toggle_favorite_recipe(request, recipe_pk):
 
 
 @login_required
-def add_ingredient(request, recipe_pk):
-    recipe = get_object_or_404(request.user.recipes, pk=recipe_pk)
+def add_ingredient(request, pk):
+    recipe = get_object_or_404(request.user.recipes, pk=pk)
 
     if request.method == "POST":  # submitted the form
         form = IngredientForm(data=request.POST)
@@ -194,8 +194,8 @@ def add_ingredient(request, recipe_pk):
 
 
 @login_required
-def add_recipe_step(request, recipe_pk):
-    recipe = get_object_or_404(request.user.recipes, pk=recipe_pk)
+def add_recipe_step(request, pk):
+    recipe = get_object_or_404(request.user.recipes, pk=pk)
 
     if request.method == "POST":  # submitted the form
         form = RecipeStepForm(data=request.POST)
@@ -203,7 +203,7 @@ def add_recipe_step(request, recipe_pk):
             recipe_step = form.save(commit=False)
             recipe_step.recipe = recipe
             recipe_step.save()
-            return redirect(to="recipe_detail", recipe_pk=recipe.pk)
+            return redirect(to="recipe_detail", pk=recipe.pk)
     else:
         form = RecipeStepForm()
 
@@ -263,11 +263,11 @@ def show_meal_plan(request, year=None, month=None, day=None):
 @csrf_exempt
 def meal_plan_add_remove_recipe(request):
     date = request.POST.get("date")
-    recipe_pk = request.POST.get("pk")
+    pk = request.POST.get("pk")
     action = request.POST.get("action")
 
     meal_plan, _ = request.user.meal_plans.get_or_create(date=date)
-    recipe = Recipe.objects.for_user(request.user).get(pk=recipe_pk)
+    recipe = Recipe.objects.for_user(request.user).get(pk=pk)
 
     if action == "add":
         meal_plan.recipes.add(recipe)
@@ -295,12 +295,12 @@ def show_random_recipe(request):
 
 
 @login_required
-def copy_recipe(request, recipe_pk):
+def copy_recipe(request, pk):
     """
     Copy a recipe and assign it to the user. This requires us to copy
     all ingredients and steps from the original recipe as well.
     """
-    original_recipe = get_object_or_404(Recipe, pk=recipe_pk)
+    original_recipe = get_object_or_404(Recipe, pk=pk)
     cloned_recipe = Recipe(
         title=original_recipe.title + " (Copy)",
         prep_time_in_minutes=original_recipe.prep_time_in_minutes,
@@ -318,4 +318,4 @@ def copy_recipe(request, recipe_pk):
 
     cloned_recipe.tags.set(original_recipe.tags.all())
 
-    return redirect(to="recipe_detail", recipe_pk=cloned_recipe.pk)
+    return redirect(to="recipe_detail", pk=cloned_recipe.pk)

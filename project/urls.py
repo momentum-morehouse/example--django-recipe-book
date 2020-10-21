@@ -39,29 +39,29 @@ urlpatterns = [
         name="recipe_detail",
     ),
     path(
-        "recipes/<int:recipe_pk>/edit/", recipes_views.edit_recipe, name="edit_recipe"
+        "recipes/<int:pk>/edit/", recipes_views.edit_recipe, name="edit_recipe"
     ),
     path(
-        "recipes/<int:recipe_pk>/delete/",
+        "recipes/<int:pk>/delete/",
         recipes_views.delete_recipe,
         name="delete_recipe",
     ),
     path(
-        "recipes/<int:recipe_pk>/copy/", recipes_views.copy_recipe, name="copy_recipe"
+        "recipes/<int:pk>/copy/", recipes_views.copy_recipe, name="copy_recipe"
     ),
     path(
-        "recipes/<int:recipe_pk>/favorite/",
+        "recipes/<int:pk>/favorite/",
         recipes_views.toggle_favorite_recipe,
         name="toggle_favorite_recipe",
     ),
     path("recipes/new/", recipes_views.add_recipe, name="add_recipe"),
     path(
-        "recipes/<int:recipe_pk>/add_ingredient/",
+        "recipes/<int:pk>/add_ingredient/",
         recipes_views.add_ingredient,
         name="add_ingredient",
     ),
     path(
-        "recipes/<int:recipe_pk>/add_recipe_step/",
+        "recipes/<int:pk>/add_recipe_step/",
         recipes_views.add_recipe_step,
         name="add_recipe_step",
     ),
